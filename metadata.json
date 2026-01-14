@@ -1,6 +1,6 @@
 {
-  "name": "D&G Bazar y Regaleria - Gestión de Pedidos",
-  "description": "Aplicación profesional para la gestión de pedidos desde su recepción hasta el despacho, con integración de IA para análisis de texto y notificaciones de WhatsApp.",
+  "name": "D&G LOGISTICA",
+  "description": "Aplicación profesional para la gestión de pedidos y logística, con integración de IA para análisis de texto y notificaciones.",
   "requestFramePermissions": [
     "camera"
   ]

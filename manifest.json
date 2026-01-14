@@ -1,8 +1,7 @@
-
 {
-  "name": "D&G Logística",
+  "name": "D&G LOGISTICA",
   "short_name": "D&G",
-  "description": "Gestión de Pedidos Big Shop Firmat",
+  "description": "Gestión de Pedidos y Logística D&G",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#0f172a",

@@ -24,6 +24,12 @@ export interface Packaging {
   cajas: number;
 }
 
+export interface HistoryEntry {
+  status: string;
+  label: string;
+  timestamp: string;
+}
+
 export interface Order {
   id: string;
   orderNumber: string;
@@ -33,14 +39,14 @@ export interface Order {
   status: OrderStatus;
   packaging: Packaging; 
   detailedPackaging?: PackagingEntry[];
-  location?: string;
   reviewer?: string;
   notes?: string; 
-  carrier?: string; // Nuevo campo para transporte
+  carrier?: string;
   createdAt: string;
   source: 'Correo' | 'WhatsApp' | 'Manual';
   sourceDetail?: string;
   lockedBy?: string; 
+  history: HistoryEntry[];
 }
 
 export type View = 'DASHBOARD' | 'PENDING' | 'COMPLETED' | 'DISPATCHED' | 'NEW_ORDER' | 'NEW_ORDER_MANUAL' | 'ALL' | 'GENERAL_ENTRY';
