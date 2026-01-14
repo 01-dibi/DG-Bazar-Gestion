@@ -2,16 +2,9 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
 export async function analyzeOrderText(text: string) {
-  // Intentamos obtener la clave del entorno shimmed por Vite
-  const apiKey = process.env.API_KEY;
-  
-  if (!apiKey) {
-    console.error("CRITICAL: API_KEY no encontrada en el entorno.");
-    return null;
-  }
-
+  // Use direct process.env.API_KEY reference for initialization as per guidelines
   try {
-    const ai = new GoogleGenAI({ apiKey });
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
