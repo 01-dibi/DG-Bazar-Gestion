@@ -97,7 +97,7 @@ export default function App() {
   useEffect(() => {
     loadData();
     if (supabase) {
-      const channel = supabase.channel('realtime_dg_v17_stable')
+      const channel = supabase.channel('realtime_dg_v17_stable_v2')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, (payload) => {
           if (payload.eventType === 'INSERT') setOrders(prev => [payload.new.payload as Order, ...prev]);
           else if (payload.eventType === 'UPDATE') setOrders(prev => prev.map(o => o.id === payload.new.id ? payload.new.payload as Order : o));
@@ -152,7 +152,7 @@ export default function App() {
           </div>
         </div>
         <div className="text-center mt-2">
-           <span className="text-[8px] font-black text-slate-200 uppercase tracking-widest">v1.7.1 - OFICIAL</span>
+           <span className="text-[8px] font-black text-slate-200 uppercase tracking-widest">v1.7.2 - ESTABLE</span>
         </div>
       </header>
 
