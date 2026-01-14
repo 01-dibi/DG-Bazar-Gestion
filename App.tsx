@@ -35,17 +35,15 @@ const supabase = (supabaseUrl && supabaseAnonKey) ? createClient(supabaseUrl, su
 const DEPOSITS = ['E', 'F', 'D1', 'D2', 'A1', 'OTRO'];
 const PACKAGE_TYPES = ['CAJA', 'BOLSA', 'PAQUETE', 'BULTO', 'BOBINA', 'OTRO'];
 
-// Componente de Logo Corporativo D&G - Refinado según imagen
-const CorporateLogo = ({ className = "scale-100", showSub = false }) => (
+// Componente de Logo Corporativo D&G - Identidad Oficial
+const CorporateLogo = ({ className = "scale-100", showLogistica = false }) => (
   <div className={`flex flex-col items-center justify-center ${className} transition-all duration-500`}>
     <div className="flex items-center font-sans select-none">
-      {/* La 'd' minúscula en gris oscuro */}
       <span className="text-[#333333] text-6xl font-black leading-none -mr-1">d</span>
-      {/* 'D&G' en naranja vibrante */}
       <span className="text-[#f97316] text-7xl font-black tracking-tighter leading-none">D&G</span>
     </div>
-    {showSub && (
-      <p className="text-[11px] font-black text-slate-500 uppercase tracking-[0.6em] mt-1 ml-4 border-t border-slate-200 pt-1">
+    {showLogistica && (
+      <p className="text-[12px] font-black text-slate-400 uppercase tracking-[0.7em] mt-1 ml-4 border-t border-slate-100 pt-1">
         LOGISTICA
       </p>
     )}
@@ -99,7 +97,7 @@ export default function App() {
   useEffect(() => {
     loadData();
     if (supabase) {
-      const channel = supabase.channel('realtime_dg_v16_final')
+      const channel = supabase.channel('realtime_dg_v17_stable')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, (payload) => {
           if (payload.eventType === 'INSERT') setOrders(prev => [payload.new.payload as Order, ...prev]);
           else if (payload.eventType === 'UPDATE') setOrders(prev => prev.map(o => o.id === payload.new.id ? payload.new.payload as Order : o));
@@ -129,27 +127,33 @@ export default function App() {
     return base.filter(o => o.customerName.toLowerCase().includes(lowSearch) || o.orderNumber.toLowerCase().includes(lowSearch));
   }, [orders, view, searchTerm]);
 
-  if (isCustomerMode) return <CustomerPortal onBack={() => setIsCustomerMode(false)} allOrders={orders} />;
+  // Fix: Pass showToast function to CustomerPortal to resolve missing definition error
+  if (isCustomerMode) return <CustomerPortal onBack={() => setIsCustomerMode(false)} allOrders={orders} showToast={showToast} />;
   if (!currentUser) return <LoginModal onLogin={u => setCurrentUser(u)} onClientPortal={() => setIsCustomerMode(true)} />;
 
   return (
-    <div className="max-w-md mx-auto min-h-screen bg-slate-50 pb-24 relative font-sans overflow-x-hidden">
+    <div className="max-w-md mx-auto min-h-screen bg-slate-50 pb-24 relative font-sans overflow-x-hidden animate-custom">
       {toast && (
-        <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-[1000] px-6 py-3 rounded-full shadow-2xl font-black text-[10px] uppercase tracking-widest animate-in slide-in-from-top-10 duration-300 ${
-          toast.type === 'success' ? 'bg-orange-600 text-white' : 'bg-red-600 text-white'
-        }`}> {toast.message} </div>
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[1000] px-8 py-4 rounded-full shadow-2xl font-black text-[10px] uppercase tracking-widest bg-orange-600 text-white animate-bounce">
+          {toast.message}
+        </div>
       )}
 
-      <header className="bg-white p-6 rounded-b-[44px] shadow-xl relative z-10 border-b-4 border-orange-500/20">
+      <header className="bg-white p-6 rounded-b-[48px] shadow-xl relative z-10 border-b-4 border-orange-500/10">
         <div className="flex justify-between items-center">
-          <button onClick={loadData} className="p-3 bg-slate-50 rounded-2xl active:scale-90 transition-transform text-slate-400"><RefreshCcw size={20} className={isLoading ? 'animate-spin' : ''} /></button>
-          <div className="flex flex-col items-center scale-50 -my-4">
+          <button onClick={loadData} className="p-3 bg-slate-50 rounded-2xl active:scale-90 transition-transform text-slate-400">
+            <RefreshCcw size={20} className={isLoading ? 'animate-spin' : ''} />
+          </button>
+          <div className="flex flex-col items-center scale-[0.45] -my-6">
              <CorporateLogo />
           </div>
           <div className="flex flex-col items-end">
             <div className="p-2.5 rounded-2xl bg-[#f97316] shadow-lg text-white"><User size={18} /></div>
-            <p className="text-[6px] font-black mt-1 text-slate-400 uppercase tracking-widest">{currentUser.name}</p>
+            <p className="text-[7px] font-black mt-1 text-slate-400 uppercase tracking-widest">{currentUser.name}</p>
           </div>
+        </div>
+        <div className="text-center mt-2">
+           <span className="text-[8px] font-black text-slate-200 uppercase tracking-widest">v1.7.0 - OFICIAL</span>
         </div>
       </header>
 
@@ -160,14 +164,14 @@ export default function App() {
             <p className="text-[10px] font-black uppercase tracking-widest">Sincronizando D&G...</p>
           </div>
         ) : view === 'DASHBOARD' ? (
-          <div className="grid grid-cols-2 gap-4 animate-in fade-in duration-500">
+          <div className="grid grid-cols-2 gap-4">
             <StatCard count={orders.filter(o => o.status === OrderStatus.PENDING).length} label="PENDIENTES" color="bg-[#f97316]" icon={<ClipboardList size={20} />} onClick={() => setView('PENDING')} />
             <StatCard count={orders.filter(o => o.status === OrderStatus.COMPLETED).length} label="LISTOS" color="bg-[#333333]" icon={<CheckCircle2 size={20} />} onClick={() => setView('COMPLETED')} />
             <StatCard count={orders.length} label="HISTORIAL" color="bg-slate-600" icon={<History size={20} />} onClick={() => setView('ALL')} />
             <StatCard count={orders.filter(o => o.status === OrderStatus.DISPATCHED).length} label="DESPACHO" color="bg-orange-700" icon={<Truck size={20} />} onClick={() => setView('DISPATCHED')} />
             
-            <button onClick={() => setShowGeneralEntryModal(true)} className="col-span-2 bg-white border-2 border-slate-100 rounded-[32px] p-6 flex items-center justify-between shadow-sm active:scale-95 transition-all">
-              <div className="flex items-center gap-4"><div className="bg-[#f97316] text-white p-3 rounded-2xl shadow-lg"><Plus size={24} /></div><div><p className="font-black text-lg uppercase leading-none">NUEVA CARGA</p><p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Alta de Pedidos</p></div></div>
+            <button onClick={() => setShowGeneralEntryModal(true)} className="col-span-2 bg-white border-2 border-slate-100 rounded-[36px] p-6 flex items-center justify-between shadow-sm active:scale-95 transition-all">
+              <div className="flex items-center gap-4"><div className="bg-[#f97316] text-white p-3 rounded-2xl shadow-lg"><Plus size={24} /></div><div><p className="font-black text-lg uppercase leading-none text-slate-800">NUEVA CARGA</p><p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Alta de Pedidos</p></div></div>
               <ChevronRight size={24} className="text-slate-200" />
             </button>
           </div>
@@ -182,7 +186,9 @@ export default function App() {
               <input type="text" placeholder="Buscar cliente o pedido..." className="w-full bg-white border-2 border-slate-100 rounded-3xl py-4 pl-12 pr-4 text-sm font-bold outline-none focus:border-orange-500 transition-all shadow-sm" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
             </div>
             <div className="space-y-3 pb-20">
-              {filteredOrders.map(order => (
+              {filteredOrders.length === 0 ? (
+                <div className="text-center py-20 opacity-20 font-black uppercase text-[10px] tracking-widest">Sin registros</div>
+              ) : filteredOrders.map(order => (
                 <div key={order.id} onClick={() => {
                   if (order.lockedBy && order.lockedBy !== currentUser.name && currentUser.role !== 'admin') {
                     alert(`EN USO POR: ${order.lockedBy}`);
@@ -247,7 +253,7 @@ export default function App() {
         />
       )}
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-slate-100 px-8 py-4 flex justify-between items-center z-50 max-w-md mx-auto rounded-t-[40px] shadow-2xl">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-slate-100 px-8 py-4 flex justify-between items-center z-50 max-w-md mx-auto rounded-t-[44px] shadow-2xl">
         <NavBtn active={view === 'DASHBOARD'} icon={<LayoutDashboard />} onClick={() => setView('DASHBOARD')} />
         <NavBtn active={view === 'PENDING'} icon={<ClipboardList />} onClick={() => setView('PENDING')} />
         <NavBtn active={view === 'COMPLETED'} icon={<CheckCircle2 />} onClick={() => setView('COMPLETED')} />
@@ -266,7 +272,7 @@ const StatCard = ({ count, label, color, icon, onClick }: any) => (
 );
 
 const NavBtn = ({ active, icon, onClick }: any) => (
-  <button onClick={onClick} className={`p-5 rounded-[28px] transition-all duration-300 ${active ? 'text-orange-500 bg-orange-50 shadow-inner scale-110' : 'text-slate-300'}`}>{React.cloneElement(icon, { size: 28 })}</button>
+  <button onClick={onClick} className={`p-5 rounded-[28px] transition-all duration-300 ${active ? 'text-orange-500 bg-orange-50 shadow-inner scale-110' : 'text-slate-300 hover:text-slate-400'}`}>{React.cloneElement(icon, { size: 28 })}</button>
 );
 
 const OrderDetailsModal = ({ order, onClose, onSave, onStatusUpdate }: any) => {
@@ -306,7 +312,7 @@ const OrderDetailsModal = ({ order, onClose, onSave, onStatusUpdate }: any) => {
           </div>
           <div className="space-y-2 mt-4 max-h-48 overflow-y-auto pr-1 scrollbar-hide">
             {pkg.map(p => (
-              <div key={p.id} className="bg-white p-4 rounded-3xl flex justify-between items-center border border-slate-100 shadow-sm animate-in slide-in-from-right-3">
+              <div key={p.id} className="bg-white p-4 rounded-3xl flex justify-between items-center border border-slate-100 shadow-sm">
                 <span className="text-[11px] font-black uppercase text-slate-800 flex items-center">
                   <span className="text-orange-600 text-lg mr-4 bg-orange-50 w-10 h-10 flex items-center justify-center rounded-2xl">{p.quantity}</span> 
                   {p.type} <span className="text-slate-200 mx-2">|</span> <span className="text-slate-400">{p.deposit}</span>
@@ -351,26 +357,33 @@ const GeneralEntryModal = ({ onClose, onAdd }: any) => {
   );
 };
 
-const CustomerPortal = ({ onBack, allOrders }: any) => {
+// Fix: Destructure showToast from props to make it available in the component scope
+const CustomerPortal = ({ onBack, allOrders, showToast }: any) => {
   const [n, setN] = useState(''); const [f, setF] = useState<Order | null>(null);
-  const track = () => { const o = allOrders.find((x: Order) => x.orderNumber.toLowerCase() === n.toLowerCase()); setF(o || null); if(!o) alert("Número no encontrado"); };
+  const track = () => { 
+    if(!n) return;
+    const o = allOrders.find((x: Order) => x.orderNumber.toLowerCase().trim() === n.toLowerCase().trim()); 
+    setF(o || null); 
+    // Fix: showToast is now available via props
+    if(!o) showToast("Pedido no encontrado", "error"); 
+  };
   
   return (
-    <div className="min-h-screen bg-white text-slate-900 p-8 flex flex-col items-center py-16 space-y-10">
+    <div className="min-h-screen bg-white text-slate-900 p-8 flex flex-col items-center py-16 space-y-12">
       <div className="animate-in slide-in-from-top-10 duration-700">
-         <CorporateLogo className="scale-125" showSub={true} />
+         <CorporateLogo className="scale-125" showLogistica={true} />
       </div>
       
       <div className="bg-slate-50 rounded-[56px] p-10 w-full max-w-md space-y-6 shadow-2xl border-t-8 border-[#f97316]">
         <div className="text-center space-y-1">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Consulta de Estado</p>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Seguimiento de Envío</p>
         </div>
         <input className="w-full bg-white p-6 rounded-[32px] text-slate-900 font-black uppercase text-center border-2 border-slate-100 outline-none focus:border-orange-500 text-lg shadow-inner" placeholder="NRO DE PEDIDO" value={n} onChange={e => setN(e.target.value)} />
-        <button onClick={track} className="w-full bg-[#f97316] py-7 rounded-[32px] font-black uppercase text-xs tracking-[0.3em] text-white flex items-center justify-center gap-3 active:scale-95 transition-all shadow-xl"><ScanSearch size={28}/> BUSCAR PEDIDO</button>
+        <button onClick={track} className="w-full bg-[#f97316] py-7 rounded-[32px] font-black uppercase text-xs tracking-[0.3em] text-white flex items-center justify-center gap-3 active:scale-95 transition-all shadow-xl"><ScanSearch size={28}/> BUSCAR ESTADO</button>
       </div>
       {f && (
         <div className="bg-white border-2 border-slate-50 rounded-[64px] p-10 w-full max-w-md text-slate-900 space-y-8 animate-in zoom-in-95 shadow-2xl">
-          <div className="text-center"><p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">CLIENTE</p><h3 className="text-3xl font-black uppercase tracking-tighter leading-none">{f.customerName}</h3></div>
+          <div className="text-center"><p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">DESTINATARIO</p><h3 className="text-3xl font-black uppercase tracking-tighter leading-none">{f.customerName}</h3></div>
           <div className="bg-orange-50 p-10 rounded-[48px] text-center shadow-inner relative overflow-hidden">
              <p className="text-[11px] font-black text-orange-400 uppercase tracking-[0.4em] mb-2">BULTOS PROCESADOS</p>
              <p className="text-8xl font-black text-orange-600">{f.detailedPackaging?.reduce((a,c) => a+c.quantity, 0) || 0}</p>
@@ -378,7 +391,7 @@ const CustomerPortal = ({ onBack, allOrders }: any) => {
           <div className={`py-5 rounded-[28px] text-[12px] font-black uppercase text-center tracking-[0.3em] shadow-lg text-white ${f.status === OrderStatus.PENDING ? 'bg-orange-500' : 'bg-emerald-600'}`}>{f.status}</div>
         </div>
       )}
-      <button onClick={onBack} className="text-slate-400 text-[10px] font-black uppercase flex items-center gap-2 hover:text-orange-600 transition-colors tracking-widest"><ArrowLeft size={16}/> Volver al Inicio</button>
+      <button onClick={onBack} className="text-slate-400 text-[10px] font-black uppercase flex items-center gap-2 hover:text-orange-600 transition-colors tracking-widest"><ArrowLeft size={16}/> VOLVER</button>
     </div>
   );
 };
@@ -388,12 +401,15 @@ const LoginModal = ({ onLogin, onClientPortal }: any) => {
   return (
     <div className="fixed inset-0 bg-slate-950 z-[1000] flex items-center justify-center p-8">
       <div className="bg-white w-full max-w-xs rounded-[72px] p-12 text-center space-y-12 shadow-2xl border-t-8 border-orange-500">
-        <CorporateLogo className="scale-100" showSub={true} />
-        <form onSubmit={e => { e.preventDefault(); onLogin({ name: u, role: u.toLowerCase() === 'admin' ? 'admin' : 'staff' }); }} className="space-y-6">
-          <input className="w-full bg-slate-50 p-6 rounded-[32px] text-sm font-bold text-center border-2 border-slate-100 uppercase focus:border-orange-500 outline-none shadow-inner" placeholder="NOMBRE DE OPERARIO" value={u} onChange={e => setU(e.target.value)} required />
-          <button className="w-full bg-[#333333] text-white font-black py-7 rounded-[32px] shadow-2xl uppercase text-xs tracking-[0.4em] active:scale-95 transition-all">ACCEDER AL PANEL</button>
-        </form>
-        <button onClick={onClientPortal} className="text-[#f97316] font-black text-[10px] uppercase tracking-[0.4em] hover:text-orange-400 transition-colors">Portal de Seguimiento</button>
+        <CorporateLogo className="scale-100" showLogistica={false} />
+        <div className="space-y-6">
+          <h2 className="text-xs font-black text-slate-300 uppercase tracking-[0.5em]">Acceso Privado</h2>
+          <form onSubmit={e => { e.preventDefault(); if(!u) return; onLogin({ name: u, role: u.toLowerCase() === 'admin' ? 'admin' : 'staff' }); }} className="space-y-6">
+            <input className="w-full bg-slate-50 p-6 rounded-[32px] text-sm font-bold text-center border-2 border-slate-100 uppercase focus:border-orange-500 outline-none shadow-inner" placeholder="USUARIO" value={u} onChange={e => setU(e.target.value)} required />
+            <button className="w-full bg-[#333333] text-white font-black py-7 rounded-[32px] shadow-2xl uppercase text-xs tracking-[0.4em] active:scale-95 transition-all">ENTRAR</button>
+          </form>
+        </div>
+        <button onClick={onClientPortal} className="text-[#f97316] font-black text-[10px] uppercase tracking-[0.4em] hover:text-orange-400 transition-colors block mx-auto">Portal Clientes</button>
       </div>
     </div>
   );

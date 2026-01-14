@@ -1,9 +1,9 @@
 
 {
-  "name": "D&G LOGISTICA",
-  "short_name": "D&G",
-  "description": "Gestión de Pedidos y Logística D&G",
-  "start_url": ".",
+  "name": "D&G LOGISTICA OFICIAL",
+  "short_name": "D&G Log",
+  "description": "Sistema de Gestión D&G Bazar - v1.7.0",
+  "start_url": "/?v=1.7.0",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#f97316",
