@@ -35,15 +35,17 @@ const supabase = (supabaseUrl && supabaseAnonKey) ? createClient(supabaseUrl, su
 const DEPOSITS = ['E', 'F', 'D1', 'D2', 'A1', 'OTRO'];
 const PACKAGE_TYPES = ['CAJA', 'BOLSA', 'PAQUETE', 'BULTO', 'BOBINA', 'OTRO'];
 
-// Componente de Logo Corporativo D&G
+// Componente de Logo Corporativo D&G - Refinado según imagen
 const CorporateLogo = ({ className = "scale-100", showSub = false }) => (
-  <div className={`flex flex-col items-center justify-center ${className}`}>
-    <div className="flex items-baseline font-black tracking-tighter select-none">
-      <span className="text-slate-800 text-6xl leading-none">d</span>
-      <span className="text-orange-500 text-7xl leading-none -ml-1">D&G</span>
+  <div className={`flex flex-col items-center justify-center ${className} transition-all duration-500`}>
+    <div className="flex items-center font-sans select-none">
+      {/* La 'd' minúscula en gris oscuro */}
+      <span className="text-[#333333] text-6xl font-black leading-none -mr-1">d</span>
+      {/* 'D&G' en naranja vibrante */}
+      <span className="text-[#f97316] text-7xl font-black tracking-tighter leading-none">D&G</span>
     </div>
     {showSub && (
-      <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.8em] mt-1 ml-4 italic">
+      <p className="text-[11px] font-black text-slate-500 uppercase tracking-[0.6em] mt-1 ml-4 border-t border-slate-200 pt-1">
         LOGISTICA
       </p>
     )}
@@ -97,7 +99,7 @@ export default function App() {
   useEffect(() => {
     loadData();
     if (supabase) {
-      const channel = supabase.channel('realtime_dg_v16')
+      const channel = supabase.channel('realtime_dg_v16_final')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, (payload) => {
           if (payload.eventType === 'INSERT') setOrders(prev => [payload.new.payload as Order, ...prev]);
           else if (payload.eventType === 'UPDATE') setOrders(prev => prev.map(o => o.id === payload.new.id ? payload.new.payload as Order : o));
@@ -141,15 +143,11 @@ export default function App() {
       <header className="bg-white p-6 rounded-b-[44px] shadow-xl relative z-10 border-b-4 border-orange-500/20">
         <div className="flex justify-between items-center">
           <button onClick={loadData} className="p-3 bg-slate-50 rounded-2xl active:scale-90 transition-transform text-slate-400"><RefreshCcw size={20} className={isLoading ? 'animate-spin' : ''} /></button>
-          <div className="flex flex-col items-center">
-             <div className="flex items-baseline font-black tracking-tighter scale-50 -my-4">
-                <span className="text-slate-800 text-4xl">d</span>
-                <span className="text-orange-500 text-5xl -ml-1">D&G</span>
-             </div>
-             <p className="text-[7px] font-black text-slate-300 uppercase tracking-[0.4em] -mt-1">LOGISTICA</p>
+          <div className="flex flex-col items-center scale-50 -my-4">
+             <CorporateLogo />
           </div>
           <div className="flex flex-col items-end">
-            <div className="p-2.5 rounded-2xl bg-orange-500 shadow-lg text-white"><User size={18} /></div>
+            <div className="p-2.5 rounded-2xl bg-[#f97316] shadow-lg text-white"><User size={18} /></div>
             <p className="text-[6px] font-black mt-1 text-slate-400 uppercase tracking-widest">{currentUser.name}</p>
           </div>
         </div>
@@ -158,18 +156,18 @@ export default function App() {
       <main className="p-5 space-y-6">
         {isLoading && orders.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32 text-center space-y-4 opacity-40">
-            <Database className="animate-bounce text-orange-500" size={48} />
+            <Database className="animate-bounce text-[#f97316]" size={48} />
             <p className="text-[10px] font-black uppercase tracking-widest">Sincronizando D&G...</p>
           </div>
         ) : view === 'DASHBOARD' ? (
           <div className="grid grid-cols-2 gap-4 animate-in fade-in duration-500">
-            <StatCard count={orders.filter(o => o.status === OrderStatus.PENDING).length} label="PENDIENTES" color="bg-orange-500" icon={<ClipboardList size={20} />} onClick={() => setView('PENDING')} />
-            <StatCard count={orders.filter(o => o.status === OrderStatus.COMPLETED).length} label="LISTOS" color="bg-slate-800" icon={<CheckCircle2 size={20} />} onClick={() => setView('COMPLETED')} />
+            <StatCard count={orders.filter(o => o.status === OrderStatus.PENDING).length} label="PENDIENTES" color="bg-[#f97316]" icon={<ClipboardList size={20} />} onClick={() => setView('PENDING')} />
+            <StatCard count={orders.filter(o => o.status === OrderStatus.COMPLETED).length} label="LISTOS" color="bg-[#333333]" icon={<CheckCircle2 size={20} />} onClick={() => setView('COMPLETED')} />
             <StatCard count={orders.length} label="HISTORIAL" color="bg-slate-600" icon={<History size={20} />} onClick={() => setView('ALL')} />
-            <StatCard count={orders.filter(o => o.status === OrderStatus.DISPATCHED).length} label="DESPACHO" color="bg-orange-600" icon={<Truck size={20} />} onClick={() => setView('DISPATCHED')} />
+            <StatCard count={orders.filter(o => o.status === OrderStatus.DISPATCHED).length} label="DESPACHO" color="bg-orange-700" icon={<Truck size={20} />} onClick={() => setView('DISPATCHED')} />
             
             <button onClick={() => setShowGeneralEntryModal(true)} className="col-span-2 bg-white border-2 border-slate-100 rounded-[32px] p-6 flex items-center justify-between shadow-sm active:scale-95 transition-all">
-              <div className="flex items-center gap-4"><div className="bg-orange-500 text-white p-3 rounded-2xl shadow-lg"><Plus size={24} /></div><div><p className="font-black text-lg uppercase leading-none">NUEVA CARGA</p><p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Alta de Pedidos</p></div></div>
+              <div className="flex items-center gap-4"><div className="bg-[#f97316] text-white p-3 rounded-2xl shadow-lg"><Plus size={24} /></div><div><p className="font-black text-lg uppercase leading-none">NUEVA CARGA</p><p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Alta de Pedidos</p></div></div>
               <ChevronRight size={24} className="text-slate-200" />
             </button>
           </div>
@@ -358,17 +356,20 @@ const CustomerPortal = ({ onBack, allOrders }: any) => {
   const track = () => { const o = allOrders.find((x: Order) => x.orderNumber.toLowerCase() === n.toLowerCase()); setF(o || null); if(!o) alert("Número no encontrado"); };
   
   return (
-    <div className="min-h-screen bg-slate-950 text-white p-8 flex flex-col items-center py-16 space-y-10">
+    <div className="min-h-screen bg-white text-slate-900 p-8 flex flex-col items-center py-16 space-y-10">
       <div className="animate-in slide-in-from-top-10 duration-700">
          <CorporateLogo className="scale-125" showSub={true} />
       </div>
       
-      <div className="bg-white rounded-[56px] p-10 w-full max-w-md space-y-6 shadow-2xl border-t-8 border-orange-500">
-        <input className="w-full bg-slate-50 p-6 rounded-[32px] text-slate-900 font-black uppercase text-center border-2 border-slate-100 outline-none focus:border-orange-500 text-lg shadow-inner" placeholder="TU NRO DE PEDIDO" value={n} onChange={e => setN(e.target.value)} />
-        <button onClick={track} className="w-full bg-orange-500 py-7 rounded-[32px] font-black uppercase text-xs tracking-[0.3em] flex items-center justify-center gap-3 active:scale-95 transition-all shadow-xl"><ScanSearch size={28}/> CONSULTAR ESTADO</button>
+      <div className="bg-slate-50 rounded-[56px] p-10 w-full max-w-md space-y-6 shadow-2xl border-t-8 border-[#f97316]">
+        <div className="text-center space-y-1">
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Consulta de Estado</p>
+        </div>
+        <input className="w-full bg-white p-6 rounded-[32px] text-slate-900 font-black uppercase text-center border-2 border-slate-100 outline-none focus:border-orange-500 text-lg shadow-inner" placeholder="NRO DE PEDIDO" value={n} onChange={e => setN(e.target.value)} />
+        <button onClick={track} className="w-full bg-[#f97316] py-7 rounded-[32px] font-black uppercase text-xs tracking-[0.3em] text-white flex items-center justify-center gap-3 active:scale-95 transition-all shadow-xl"><ScanSearch size={28}/> BUSCAR PEDIDO</button>
       </div>
       {f && (
-        <div className="bg-white rounded-[64px] p-10 w-full max-w-md text-slate-900 space-y-8 animate-in zoom-in-95 shadow-2xl">
+        <div className="bg-white border-2 border-slate-50 rounded-[64px] p-10 w-full max-w-md text-slate-900 space-y-8 animate-in zoom-in-95 shadow-2xl">
           <div className="text-center"><p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">CLIENTE</p><h3 className="text-3xl font-black uppercase tracking-tighter leading-none">{f.customerName}</h3></div>
           <div className="bg-orange-50 p-10 rounded-[48px] text-center shadow-inner relative overflow-hidden">
              <p className="text-[11px] font-black text-orange-400 uppercase tracking-[0.4em] mb-2">BULTOS PROCESADOS</p>
@@ -377,7 +378,7 @@ const CustomerPortal = ({ onBack, allOrders }: any) => {
           <div className={`py-5 rounded-[28px] text-[12px] font-black uppercase text-center tracking-[0.3em] shadow-lg text-white ${f.status === OrderStatus.PENDING ? 'bg-orange-500' : 'bg-emerald-600'}`}>{f.status}</div>
         </div>
       )}
-      <button onClick={onBack} className="text-slate-500 text-[10px] font-black uppercase flex items-center gap-2 hover:text-white transition-colors tracking-widest"><ArrowLeft size={16}/> Salir del Portal</button>
+      <button onClick={onBack} className="text-slate-400 text-[10px] font-black uppercase flex items-center gap-2 hover:text-orange-600 transition-colors tracking-widest"><ArrowLeft size={16}/> Volver al Inicio</button>
     </div>
   );
 };
@@ -389,10 +390,10 @@ const LoginModal = ({ onLogin, onClientPortal }: any) => {
       <div className="bg-white w-full max-w-xs rounded-[72px] p-12 text-center space-y-12 shadow-2xl border-t-8 border-orange-500">
         <CorporateLogo className="scale-100" showSub={true} />
         <form onSubmit={e => { e.preventDefault(); onLogin({ name: u, role: u.toLowerCase() === 'admin' ? 'admin' : 'staff' }); }} className="space-y-6">
-          <input className="w-full bg-slate-50 p-6 rounded-[32px] text-sm font-bold text-center border-2 border-slate-100 uppercase focus:border-orange-500 outline-none shadow-inner" placeholder="OPERARIO / ADMIN" value={u} onChange={e => setU(e.target.value)} required />
-          <button className="w-full bg-slate-900 text-white font-black py-7 rounded-[32px] shadow-2xl uppercase text-xs tracking-[0.4em] active:scale-95 transition-all">ACCEDER AL PANEL</button>
+          <input className="w-full bg-slate-50 p-6 rounded-[32px] text-sm font-bold text-center border-2 border-slate-100 uppercase focus:border-orange-500 outline-none shadow-inner" placeholder="NOMBRE DE OPERARIO" value={u} onChange={e => setU(e.target.value)} required />
+          <button className="w-full bg-[#333333] text-white font-black py-7 rounded-[32px] shadow-2xl uppercase text-xs tracking-[0.4em] active:scale-95 transition-all">ACCEDER AL PANEL</button>
         </form>
-        <button onClick={onClientPortal} className="text-orange-600 font-black text-[10px] uppercase tracking-[0.4em] hover:text-orange-400 transition-colors">Portal de Seguimiento</button>
+        <button onClick={onClientPortal} className="text-[#f97316] font-black text-[10px] uppercase tracking-[0.4em] hover:text-orange-400 transition-colors">Portal de Seguimiento</button>
       </div>
     </div>
   );
