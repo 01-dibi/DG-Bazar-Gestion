@@ -12,25 +12,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
-    rollupOptions: {
-      // Marcamos estas librerías como externas para que Vite no falle al intentar resolverlas localmente
-      // y use el importmap definido en index.html
-      external: [
-        'react',
-        'react-dom',
-        '@supabase/supabase-js',
-        'lucide-react',
-        '@google/genai'
-      ],
-      output: {
-        globals: {
-          react: 'React',
-          'react-dom': 'ReactDOM',
-          '@supabase/supabase-js': 'supabase',
-          'lucide-react': 'lucide'
-        }
-      }
-    }
+    emptyOutDir: true
   },
   server: {
     port: 3000

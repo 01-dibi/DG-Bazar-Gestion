@@ -7,14 +7,15 @@
     <meta name="theme-color" content="#f97316">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="/manifest.json?v=1.7.2">
-    <title>D&G LOGISTICA v1.7.2</title>
+    <link rel="manifest" href="/manifest.json?v=2.0.0">
+    <title>D&G LOGISTICA v2.0.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       body {
         -webkit-tap-highlight-color: transparent;
         overscroll-behavior-y: contain;
         background-color: #f8fafc;
+        user-select: none;
       }
       #root {
         min-height: 100vh;
@@ -26,25 +27,26 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
       }
+      input, select {
+        user-select: text;
+      }
       @keyframes fade-in {
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
       }
       .animate-custom {
-        animation: fade-in 0.5s ease-out forwards;
+        animation: fade-in 0.4s ease-out forwards;
       }
     </style>
 <script type="importmap">
 {
   "imports": {
     "react": "https://esm.sh/react@^19.2.3",
-    "react-dom": "https://esm.sh/react-dom@^19.2.3",
-    "react-dom/client": "https://esm.sh/react-dom@^19.2.3/client",
-    "@google/genai": "https://esm.sh/@google/genai@^1.35.0",
-    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.48.1",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
-    "react/": "https://esm.sh/react@^19.2.3/",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.35.0",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.90.1",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
     "vite": "https://esm.sh/vite@^7.3.1",
     "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
   }
@@ -53,6 +55,6 @@
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans">
     <div id="root"></div>
-    <script type="module" src="/index.tsx?v=1.7.2"></script>
+    <script type="module" src="/index.tsx?v=2.0.0"></script>
 </body>
 </html>

@@ -1,8 +1,8 @@
 
 {
-  "name": "dg-bazar-gestion",
+  "name": "dg-bazar-logistica",
   "private": true,
-  "version": "1.0.1",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",

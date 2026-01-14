@@ -2,8 +2,8 @@
 {
   "name": "D&G LOGISTICA OFICIAL",
   "short_name": "D&G Log",
-  "description": "Sistema de Gestión D&G Bazar - v1.7.2",
-  "start_url": "/?v=1.7.2",
+  "description": "Sistema de Gestión D&G Bazar - v1.7.4",
+  "start_url": "/?v=1.7.4",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#f97316",
