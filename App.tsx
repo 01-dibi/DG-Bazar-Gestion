@@ -127,7 +127,6 @@ export default function App() {
     return base.filter(o => o.customerName.toLowerCase().includes(lowSearch) || o.orderNumber.toLowerCase().includes(lowSearch));
   }, [orders, view, searchTerm]);
 
-  // Fix: Pass showToast function to CustomerPortal to resolve missing definition error
   if (isCustomerMode) return <CustomerPortal onBack={() => setIsCustomerMode(false)} allOrders={orders} showToast={showToast} />;
   if (!currentUser) return <LoginModal onLogin={u => setCurrentUser(u)} onClientPortal={() => setIsCustomerMode(true)} />;
 
@@ -153,7 +152,7 @@ export default function App() {
           </div>
         </div>
         <div className="text-center mt-2">
-           <span className="text-[8px] font-black text-slate-200 uppercase tracking-widest">v1.7.0 - OFICIAL</span>
+           <span className="text-[8px] font-black text-slate-200 uppercase tracking-widest">v1.7.1 - OFICIAL</span>
         </div>
       </header>
 
@@ -357,14 +356,12 @@ const GeneralEntryModal = ({ onClose, onAdd }: any) => {
   );
 };
 
-// Fix: Destructure showToast from props to make it available in the component scope
 const CustomerPortal = ({ onBack, allOrders, showToast }: any) => {
   const [n, setN] = useState(''); const [f, setF] = useState<Order | null>(null);
   const track = () => { 
     if(!n) return;
     const o = allOrders.find((x: Order) => x.orderNumber.toLowerCase().trim() === n.toLowerCase().trim()); 
     setF(o || null); 
-    // Fix: showToast is now available via props
     if(!o) showToast("Pedido no encontrado", "error"); 
   };
   

@@ -7,24 +7,31 @@
     <meta name="theme-color" content="#f97316">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="/manifest.json">
-    <title>D&G LOGISTICA</title>
+    <link rel="manifest" href="/manifest.json?v=1.7.1">
+    <title>D&G LOGISTICA v1.7.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       body {
         -webkit-tap-highlight-color: transparent;
         overscroll-behavior-y: contain;
+        background-color: #f8fafc;
       }
       #root {
         min-height: 100vh;
       }
-      /* Ocultar barra de desplazamiento manteniendo funcionalidad */
       .scrollbar-hide::-webkit-scrollbar {
         display: none;
       }
       .scrollbar-hide {
         -ms-overflow-style: none;
         scrollbar-width: none;
+      }
+      @keyframes fade-in {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .animate-custom {
+        animation: fade-in 0.5s ease-out forwards;
       }
     </style>
 <script type="importmap">
@@ -44,6 +51,6 @@
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans">
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
+    <script type="module" src="/index.tsx?v=1.7.1"></script>
 </body>
 </html>
